@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 
-public class Galgelogik {
+public class Galgelogik extends UnicastRemoteObject implements IGalgelogik {
   private ArrayList<String> muligeOrd = new ArrayList<String>();
   private String ordet;
   private ArrayList<String> brugteBogstaver = new ArrayList<String>();
@@ -20,40 +22,48 @@ public class Galgelogik {
   private boolean spilletErTabt;
 
 
+  @Override
   public ArrayList<String> getBrugteBogstaver() {
     return brugteBogstaver;
   }
 
+  @Override
   public String getSynligtOrd() {
     return synligtOrd;
   }
 
+  @Override
   public String getOrdet() {
     return ordet;
   }
 
+  @Override
   public int getAntalForkerteBogstaver() {
     return antalForkerteBogstaver;
   }
 
+  @Override
   public boolean erSidsteBogstavKorrekt() {
     return sidsteBogstavVarKorrekt;
   }
 
+  @Override
   public boolean erSpilletVundet() {
     return spilletErVundet;
   }
 
+  @Override
   public boolean erSpilletTabt() {
     return spilletErTabt;
   }
 
+  @Override
   public boolean erSpilletSlut() {
     return spilletErTabt || spilletErVundet;
   }
 
 
-  public Galgelogik() {
+  public Galgelogik() throws RemoteException {
     muligeOrd.add("bil");
     muligeOrd.add("computer");
     muligeOrd.add("programmering");
@@ -65,6 +75,7 @@ public class Galgelogik {
     nulstil();
   }
 
+  @Override
   public void nulstil() {
     brugteBogstaver.clear();
     antalForkerteBogstaver = 0;
@@ -89,6 +100,7 @@ public class Galgelogik {
     }
   }
 
+  @Override
   public void gætBogstav(String bogstav) {
     if (bogstav.length() != 1) return;
     System.out.println("Der gættes på bogstavet: " + bogstav);
@@ -112,6 +124,7 @@ public class Galgelogik {
     opdaterSynligtOrd();
   }
 
+  @Override
   public void logStatus() {
     System.out.println("---------- ");
     System.out.println("- ordet (skult) = " + ordet);
@@ -135,6 +148,7 @@ public class Galgelogik {
     return sb.toString();
   }
 
+  @Override
   public void hentOrdFraDr() throws Exception {
     String data = hentUrl("http://dr.dk");
     System.out.println("data = " + data);
