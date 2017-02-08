@@ -1,8 +1,12 @@
 package galgeleg;
 
+import javax.jws.WebService;
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -11,7 +15,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 
-public class Galgelogik extends UnicastRemoteObject implements IGalgelogik {
+@WebService(endpointInterface = "galgeleg.IGalgelogik")
+public class Galgelogik implements IGalgelogik{
+
   private ArrayList<String> muligeOrd = new ArrayList<String>();
   private String ordet;
   private ArrayList<String> brugteBogstaver = new ArrayList<String>();
@@ -20,62 +26,59 @@ public class Galgelogik extends UnicastRemoteObject implements IGalgelogik {
   private boolean sidsteBogstavVarKorrekt;
   private boolean spilletErVundet;
   private boolean spilletErTabt;
+  UserAuthenticator userAuthenticator;
 
 
-  @Override
   public ArrayList<String> getBrugteBogstaver() {
     return brugteBogstaver;
   }
 
-  @Override
+
   public String getSynligtOrd() {
     return synligtOrd;
   }
 
-  @Override
+
   public String getOrdet() {
     return ordet;
   }
 
-  @Override
+
   public int getAntalForkerteBogstaver() {
     return antalForkerteBogstaver;
   }
 
-  @Override
+
   public boolean erSidsteBogstavKorrekt() {
     return sidsteBogstavVarKorrekt;
   }
 
-  @Override
+
   public boolean erSpilletVundet() {
     return spilletErVundet;
   }
 
-  @Override
+
   public boolean erSpilletTabt() {
     return spilletErTabt;
   }
 
-  @Override
+
   public boolean erSpilletSlut() {
     return spilletErTabt || spilletErVundet;
   }
 
 
   public Galgelogik() throws RemoteException {
-    muligeOrd.add("bil");
-    muligeOrd.add("computer");
-    muligeOrd.add("programmering");
-    muligeOrd.add("motorvej");
-    muligeOrd.add("busrute");
-    muligeOrd.add("gangsti");
-    muligeOrd.add("skovsnegl");
-    muligeOrd.add("solsort");
-    nulstil();
+      try {
+          hentOrdFraDr();
+      }catch (Exception e){
+          System.out.println(e.getStackTrace());
+      }
+      userAuthenticator = new UserAuthenticator();
   }
 
-  @Override
+
   public void nulstil() {
     brugteBogstaver.clear();
     antalForkerteBogstaver = 0;
@@ -100,7 +103,7 @@ public class Galgelogik extends UnicastRemoteObject implements IGalgelogik {
     }
   }
 
-  @Override
+
   public void gætBogstav(String bogstav) {
     if (bogstav.length() != 1) return;
     System.out.println("Der gættes på bogstavet: " + bogstav);
@@ -124,7 +127,6 @@ public class Galgelogik extends UnicastRemoteObject implements IGalgelogik {
     opdaterSynligtOrd();
   }
 
-  @Override
   public void logStatus() {
     System.out.println("---------- ");
     System.out.println("- ordet (skult) = " + ordet);
@@ -148,8 +150,8 @@ public class Galgelogik extends UnicastRemoteObject implements IGalgelogik {
     return sb.toString();
   }
 
-  @Override
-  public void hentOrdFraDr() throws Exception {
+
+  public void hentOrdFraDr() throws Exception{
     String data = hentUrl("http://dr.dk");
     System.out.println("data = " + data);
 
@@ -160,5 +162,25 @@ public class Galgelogik extends UnicastRemoteObject implements IGalgelogik {
 
     System.out.println("muligeOrd = " + muligeOrd);
     nulstil();
+  }
+
+  public void authenticateUser(String username, String password){
+
+      try{
+          URL url = new URL("http://javabog.dk:9901/brugeradmin?wsdl");
+          QName qname = new QName("http://soap.transport.brugerautorisation/", "BrugeradminImplService");
+          Service service = Service.create(url, qname);
+          Brugeradmin ba = service.getPort(Brugeradmin.class);
+          Bruger b = ba.hentBruger("s145182", "jegerenmissekat");
+          System.out.println("Fik bruger = " + b);
+      }catch (MalformedURLException mfe)
+      {
+          System.out.println(mfe.getStackTrace().toString());
+      }
+  }
+
+  public boolean isUserAuthenticated()
+  {
+      return userAuthenticator.authenticated;
   }
 }

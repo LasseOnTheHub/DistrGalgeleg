@@ -1,5 +1,9 @@
 package galgeleg;
 
+import javax.jws.WebMethod;
+import javax.jws.WebService;
+import javax.xml.ws.Endpoint;
+import javax.xml.ws.WebEndpoint;
 import java.rmi.Naming;
 
 /**
@@ -10,11 +14,13 @@ public class GalgeServer {
     public static void main(String[] arg) throws Exception
     {
         // Enten: Kør programmet 'rmiregistry' fra mappen med .class-filerne, eller:
-        java.rmi.registry.LocateRegistry.createRegistry(1099); // start i server-JVM
+        //java.rmi.registry.LocateRegistry.createRegistry(1081); // start i server-JVM
 
         IGalgelogik g = new Galgelogik() {
         };
-        Naming.rebind("rmi://localhost/galgeserver", g);
-        System.out.println("galgeserver registreret.");
+        Endpoint.publish("http://[::]:9981/galgespil", new Galgelogik());
+        System.out.println("Brugeradmin publiceret over SOAP");
+        //Naming.rebind("rmi://localhost/galgeserver", g);
+        //System.out.println("galgeserver registreret.");
     }
 }

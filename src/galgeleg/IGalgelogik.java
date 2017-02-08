@@ -1,34 +1,39 @@
 package galgeleg;
 
+import javax.jws.WebMethod;
+import javax.jws.WebService;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.rmi.Remote;
 import java.util.ArrayList;
 
-/**
- * Created by lasse on 2/3/17.
- */
-public interface IGalgelogik extends Remote, Serializable {
-    ArrayList<String> getBrugteBogstaver() throws java.rmi.RemoteException;
+@WebService
+public interface IGalgelogik{
+    @WebMethod ArrayList<String> getBrugteBogstaver();
 
-    String getSynligtOrd() throws java.rmi.RemoteException;
+    @WebMethod String getSynligtOrd();
 
-    String getOrdet() throws java.rmi.RemoteException;
+    @WebMethod String getOrdet();
 
-    int getAntalForkerteBogstaver() throws java.rmi.RemoteException;
+    @WebMethod int getAntalForkerteBogstaver();
 
-    boolean erSidsteBogstavKorrekt() throws java.rmi.RemoteException;
+    @WebMethod boolean erSidsteBogstavKorrekt();
 
-    boolean erSpilletVundet() throws java.rmi.RemoteException;
+    @WebMethod boolean erSpilletVundet();
 
-    boolean erSpilletTabt() throws java.rmi.RemoteException;
+    @WebMethod boolean erSpilletTabt();
 
-    boolean erSpilletSlut() throws java.rmi.RemoteException;
+    @WebMethod boolean erSpilletSlut();
 
-    void nulstil() throws java.rmi.RemoteException;
+    @WebMethod void nulstil();
 
-    void gætBogstav(String bogstav) throws java.rmi.RemoteException;
+    @WebMethod void gætBogstav(String bogstav);
 
-    void logStatus() throws java.rmi.RemoteException;
+    @WebMethod void logStatus();
 
-    void hentOrdFraDr()  throws Exception;
+    @WebMethod void hentOrdFraDr() throws Exception;
+
+    @WebMethod void authenticateUser(String username, String password);
+
+    @WebMethod boolean isUserAuthenticated();
 }
