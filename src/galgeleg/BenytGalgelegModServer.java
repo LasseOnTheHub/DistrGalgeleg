@@ -1,37 +1,45 @@
 package galgeleg;
 
+import server.IGalgelogik;
+
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import java.net.URL;
-import java.rmi.Naming;
 import java.util.Scanner;
 
 
 
-public class GalgelegKlient {
+public class BenytGalgelegModServer {
 
-
+    private static boolean authenticated=false;
 
   public static void main(String[] args) throws Exception{
-      //IGalgelogik spil =(IGalgelogik) Naming.lookup("rmi://localhost/galgeserver");
       Scanner in = new Scanner(System.in);
-      URL url = new URL("http://[::]:9981/galgespil?wsdl");
-      QName qname = new QName("http://galgeleg/", "GalgelogikService");
+      //URL url = new URL("http://[::]:9981/galgespil?wsdl");
+      URL url = new URL("http://ubuntu4.javabog.dk:9981/galgespil?wsdl");
+      QName qname = new QName("http://server/", "GalgelogikService");
       Service service = Service.create(url, qname);
 
       IGalgelogik spil = service.getPort(IGalgelogik.class);
 
+      while (!authenticated){
+          System.out.println("Indtast brugernavn");
+          String username = in.next();
+          System.out.println("Indtast password");
+          String password = in.next();
 
-      spil.authenticateUser("keg", "mis");
+          boolean login = spil.login(username,password);
+
+          if (login) {
+              authenticated = true;
+          }
+          else {
+              authenticated = false;
+              System.out.println("Forkert brugernavn eller password. Prøv igen.");
+          }
+      }
 
       spil.nulstil();
-/*
-    try {
-      spil.hentOrdFraDr();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-*/
 
       spil.logStatus();
 

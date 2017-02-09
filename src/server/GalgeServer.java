@@ -1,10 +1,6 @@
-package galgeleg;
+package server;
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
-import javax.xml.ws.WebEndpoint;
-import java.rmi.Naming;
 
 /**
  * Created by lasse on 2/3/17.

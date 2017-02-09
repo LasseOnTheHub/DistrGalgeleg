@@ -1,6 +1,4 @@
-package galgeleg;
-
-import galgeleg.Bruger;
+package brugerautorisation.transport.soap;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;

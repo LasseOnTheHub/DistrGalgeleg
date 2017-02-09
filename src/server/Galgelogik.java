@@ -1,4 +1,4 @@
-package galgeleg;
+package server;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
@@ -6,18 +6,18 @@ import javax.xml.ws.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+
+import brugerautorisation.transport.soap.Brugeradmin;
+import brugerautorisation.transport.soap.Bruger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 
-@WebService(endpointInterface = "galgeleg.IGalgelogik")
+@WebService(endpointInterface = "server.IGalgelogik")
 public class Galgelogik implements IGalgelogik{
-
   private ArrayList<String> muligeOrd = new ArrayList<String>();
   private String ordet;
   private ArrayList<String> brugteBogstaver = new ArrayList<String>();
@@ -26,7 +26,7 @@ public class Galgelogik implements IGalgelogik{
   private boolean sidsteBogstavVarKorrekt;
   private boolean spilletErVundet;
   private boolean spilletErTabt;
-  UserAuthenticator userAuthenticator;
+
 
 
   public ArrayList<String> getBrugteBogstaver() {
@@ -75,7 +75,6 @@ public class Galgelogik implements IGalgelogik{
       }catch (Exception e){
           System.out.println(e.getStackTrace());
       }
-      userAuthenticator = new UserAuthenticator();
   }
 
 
@@ -164,23 +163,20 @@ public class Galgelogik implements IGalgelogik{
     nulstil();
   }
 
-  public void authenticateUser(String username, String password){
 
-      try{
-          URL url = new URL("http://javabog.dk:9901/brugeradmin?wsdl");
-          QName qname = new QName("http://soap.transport.brugerautorisation/", "BrugeradminImplService");
-          Service service = Service.create(url, qname);
-          Brugeradmin ba = service.getPort(Brugeradmin.class);
-          Bruger b = ba.hentBruger("s145182", "jegerenmissekat");
-          System.out.println("Fik bruger = " + b);
-      }catch (MalformedURLException mfe)
-      {
-          System.out.println(mfe.getStackTrace().toString());
-      }
+  public Boolean login(String username, String password) throws Exception {
+    URL url = new URL("http://javabog.dk:9901/brugeradmin?wsdl");
+    QName qname = new QName("http://soap.transport.brugerautorisation/", "BrugeradminImplService");
+    Service service = Service.create(url, qname);
+    Brugeradmin ba = service.getPort(Brugeradmin.class);
+
+    try{
+      Bruger b = ba.hentBruger(username, password);
+    }catch (Throwable e)
+    {
+      return false;
+    }
+    return true;
   }
 
-  public boolean isUserAuthenticated()
-  {
-      return userAuthenticator.authenticated;
-  }
 }

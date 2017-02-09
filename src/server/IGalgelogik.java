@@ -1,10 +1,7 @@
-package galgeleg;
+package server;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.rmi.Remote;
 import java.util.ArrayList;
 
 @WebService
@@ -33,7 +30,5 @@ public interface IGalgelogik{
 
     @WebMethod void hentOrdFraDr() throws Exception;
 
-    @WebMethod void authenticateUser(String username, String password);
-
-    @WebMethod boolean isUserAuthenticated();
+    @WebMethod Boolean login(String username, String password) throws Exception;
 }
